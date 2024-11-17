@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware'
 export interface Todo {
   id: string
   text: string
+  done: boolean
 }
 
 interface Store {

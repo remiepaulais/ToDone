@@ -1,28 +1,55 @@
-import { Edit, Trash } from 'lucide-react'
+import { Check, Edit, Trash, X } from 'lucide-react'
 import { Button } from './ui/button'
 import { useStore } from '@/store'
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import { cn } from '@/lib/utils'
+import { Checkbox } from './ui/checkbox'
 
 const TodoCard = forwardRef<HTMLLIElement, { text: string; id: string }>(
   ({ text, id }, ref) => {
     const [editMode, setEditMode] = useState(false)
+    const [editText, setEditText] = useState(text)
     const { todos, setTodos } = useStore()
     const inputRef = useRef<HTMLInputElement>(null)
+
+    const todo = todos.find((t) => t.id === id)
+    const isDone = todo?.done || false
 
     const handleDeleteTodo = (id: string) => {
       setTodos(todos.filter((todo) => todo.id !== id))
     }
 
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setEditText(e.target.value)
+    }
+
+    const handleToggleDone = () => {
       setTodos(
         todos.map((todo) => {
           if (todo.id === id) {
-            return { ...todo, text: e.target.value }
+            return { ...todo, done: !isDone }
           }
           return todo
         })
       )
+    }
+
+    const handleSave = () => {
+      setTodos(
+        todos.map((todo) => {
+          if (todo.id === id) {
+            return { ...todo, text: editText }
+          }
+          return todo
+        })
+      )
+      setEditMode(false)
+    }
+
+    const handleCancel = () => {
+      setEditText(text)
+      setEditMode(false)
     }
 
     useEffect(() => {
@@ -37,47 +64,92 @@ const TodoCard = forwardRef<HTMLLIElement, { text: string; id: string }>(
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.2 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 20 }}
         className='flex gap-4 rounded-lg p-4 bg-card'
         ref={ref}
       >
         <div className='flex-1 flex items-center'>
+          {!editMode && (
+            <Checkbox
+              className='h-4 w-4 rounded-md border-border'
+              checked={isDone}
+              onCheckedChange={handleToggleDone}
+              aria-label='Mark Todo as Done'
+            />
+          )}
           {editMode ? (
             <input
               type='text'
-              value={text}
-              onChange={(e) => handleOnChange(e)}
+              value={editText}
+              onChange={handleOnChange}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  setEditMode(false)
+                  handleSave()
+                } else if (e.key === 'Escape') {
+                  handleCancel()
                 }
               }}
-              className='text-sm font-medium text-accent-foreground outline outline-1 outline-muted bg-transparent p-2 rounded-lg contain-content'
+              className='flex-1 text-sm font-medium text-accent-foreground outline outline-1 outline-muted bg-transparent p-2 rounded-lg contain-content'
               ref={inputRef}
             />
           ) : (
-            <p className='text-sm font-medium text-muted-foreground pl-2'>
+            <p
+              className={cn(
+                'flex-1 text-sm font-medium pl-2',
+                isDone ? 'line-through text-muted-foreground' : ''
+              )}
+            >
               {text}
             </p>
           )}
         </div>
         <div className='flex items-center gap-4'>
-          <Button
-            size='icon'
-            variant='ghost'
-            onClick={() => setEditMode(!editMode)}
-            aria-label='Edit Todo'
-          >
-            <Edit />
-          </Button>
-          <Button
-            size='icon'
-            variant='destructive'
-            onClick={() => handleDeleteTodo(id)}
-            aria-label='Delete Todo'
-          >
-            <Trash />
-          </Button>
+          {editMode ? (
+            <>
+              <Button
+                size='icon'
+                variant='ghost'
+                onClick={handleSave}
+                aria-label='Save Edit'
+              >
+                <Check />
+              </Button>
+              <Button
+                size='icon'
+                variant='destructive'
+                onClick={handleCancel}
+                aria-label='Cancel Edit'
+              >
+                <X />
+              </Button>
+            </>
+          ) : (
+            <>
+              {!isDone && (
+                <Button
+                  size='icon'
+                  variant='ghost'
+                  onClick={() => {
+                    setEditText(text)
+                    setEditMode(true)
+                  }}
+                  aria-label='Edit Todo'
+                  disabled={isDone}
+                >
+                  {' '}
+                  <Edit />
+                </Button>
+              )}
+              <Button
+                size='icon'
+                variant='destructive'
+                onClick={() => handleDeleteTodo(id)}
+                aria-label='Delete Todo'
+              >
+                <Trash />
+              </Button>
+            </>
+          )}
         </div>
       </motion.li>
     )
