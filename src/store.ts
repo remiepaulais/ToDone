@@ -1,10 +1,15 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+export interface Todo {
+  id: string
+  text: string
+}
+
 interface Store {
-  todos: string[]
+  todos: Todo[]
   todoValue: string
-  setTodos: (todos: string[]) => void
+  setTodos: (todos: Todo[]) => void
   setTodoValue: (todoValue: string) => void
 }
 
@@ -13,7 +18,7 @@ export const useStore = create<Store>()(
     (set) => ({
       todos: [],
       todoValue: '',
-      setTodos: (todos: string[]) => set({ todos }),
+      setTodos: (todos: Todo[]) => set({ todos }),
       setTodoValue: (todoValue: string) => set({ todoValue })
     }),
     {

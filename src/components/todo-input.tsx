@@ -6,6 +6,10 @@ import { useStore } from '@/store'
 const TodoInput = () => {
   const { todos, setTodos, todoValue, setTodoValue } = useStore()
 
+  const uuid = () => {
+    return Math.random().toString(36).substring(2, 15)
+  }
+
   return (
     <header className='flex sm:flex-row flex-col sm:items-center justify-between gap-4'>
       <h1 className='text-2xl font-bold text-center sm:text-left sm:text-3xl'>
@@ -15,7 +19,7 @@ const TodoInput = () => {
         className='flex gap-2 flex-1'
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
-          setTodos([...todos, todoValue])
+          setTodos([...todos, { id: uuid(), text: todoValue }])
           setTodoValue('')
         }}
       >
