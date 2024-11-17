@@ -7,7 +7,7 @@ import { Plus } from 'lucide-react'
 const TodoList = () => {
   const { todos, setTodos } = useStore()
   return (
-    <ul className='flex flex-col gap-4 overflow-hidden h-full pb-20'>
+    <ul className='flex flex-col gap-4 h-full pb-20 sm:mt-16 mt-28'>
       <AnimatePresence mode='popLayout'>
         {todos.map((item) => (
           <TodoCard key={item.id} id={item.id} text={item.text} />
@@ -26,8 +26,7 @@ const TodoList = () => {
               Add one by clicking on the button below.
             </p>
             <Button
-              size='icon'
-              variant='outline'
+              variant='secondary'
               onClick={() =>
                 setTodos([
                   ...todos,
@@ -40,6 +39,7 @@ const TodoList = () => {
               }
               aria-label='Add Todo'
             >
+              Add Todo
               <Plus />
             </Button>
           </motion.div>

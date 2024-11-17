@@ -5,6 +5,7 @@ import { forwardRef, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Checkbox } from './ui/checkbox'
+import { Input } from './ui/input'
 
 const TodoCard = forwardRef<HTMLLIElement, { text: string; id: string }>(
   ({ text, id }, ref) => {
@@ -78,7 +79,7 @@ const TodoCard = forwardRef<HTMLLIElement, { text: string; id: string }>(
             />
           )}
           {editMode ? (
-            <input
+            <Input
               type='text'
               value={editText}
               onChange={handleOnChange}
