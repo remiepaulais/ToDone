@@ -66,6 +66,7 @@ const TodoCard = forwardRef<HTMLLIElement, { text: string; id: string }>(
             size='icon'
             variant='ghost'
             onClick={() => setEditMode(!editMode)}
+            aria-label='Edit Todo'
           >
             <Edit />
           </Button>
@@ -73,6 +74,7 @@ const TodoCard = forwardRef<HTMLLIElement, { text: string; id: string }>(
             size='icon'
             variant='destructive'
             onClick={() => handleDeleteTodo(id)}
+            aria-label='Delete Todo'
           >
             <Trash />
           </Button>
